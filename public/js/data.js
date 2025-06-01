@@ -1,26 +1,41 @@
 const form = document.getElementById('form')
 const inputMessage = document.getElementById('inputMessage')
+const ul = document.getElementById('data')
 
-form.addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    if (!inputMessage.value.trim()) {
-        window.alert('message is empty')
-        return
+//delete data function
+async function deleteData(id, li) {
+    try {
+        await fetch(`http://localhost:3000/delete/${id}`, {
+            method: 'DELETE'
+        })
+        li.remove()
+    } catch (err) {
+        console.error('cannot delete: ', err)
     }
+}
 
-    form.submit()
-})
+//edit data function
+async function editData(id, input) {
+    try {
+        await fetch(`http://localhost:3000/update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: input.value })
+        })
 
+    } catch (err) {
+        console.error('cannot update data front: ', err)
+    }
+}
+
+//fetch data
 async function getData() {
     try {
         //get data
         const data = await fetch('http://localhost:3000/api', { method: 'GET' })
         const json = await data.json()
-
-        //get ul
-        const ul = document.getElementById('data')
-        ul.className = 'w-full flex flex-col justify-between'
 
         //foreaching data
         json.forEach(data => {
@@ -29,9 +44,9 @@ async function getData() {
             li.className = 'w-full flex justify-between'
 
             //create p element
-            const p = document.createElement('p')
-            p.innerText = data.message
-            p.className = 'w-full flex items-center'
+            const text = document.createElement('p')
+            text.innerText = data.message
+            text.className = 'w-full flex items-center'
 
             //create input element
             const input = document.createElement('input')
@@ -40,102 +55,74 @@ async function getData() {
             input.value = data.message
 
             //create delete button element
-            const delBtn = document.createElement('button')
-            delBtn.innerText = 'Delete'
-            delBtn.className = 'bg-red-500 py-1 px-2 my-2 text-white rounded-2xl ml-3'
+            const deleteButton = document.createElement('button')
+            deleteButton.innerText = 'Delete'
+            deleteButton.className = 'bg-red-500 py-1 px-2 my-2 text-white rounded-2xl ml-3'
 
             //onclick event
-            delBtn.onclick = async () => {
-                try {
-                    await fetch(`http://localhost:3000/delete/${data.id}`, {
-                        method: 'DELETE'
-                    })
-                    li.remove()
-                } catch (err) {
-                    console.error('cannot delete: ', err)
-                }
-            }
+            deleteButton.onclick = () => deleteData(data.id, li)
 
             //create cancel button element
-            const cancelBtn = document.createElement('button')
-            cancelBtn.innerText = 'Cancel'
-            cancelBtn.className = 'bg-gray-500 py-1 px-2 my-2 text-white rounded-2xl ml-3 hidden'
+            const cancelButton = document.createElement('button')
+            cancelButton.innerText = 'Cancel'
+            cancelButton.className = 'bg-gray-500 py-1 px-2 my-2 text-white rounded-2xl ml-3 hidden'
 
             //create save button element
-            const saveBtn = document.createElement('button')
-            saveBtn.innerText = 'Save'
-            saveBtn.className = 'bg-green-500 py-1 px-2 my-2 text-white rounded-2xl ml-3 hidden'
-            saveBtn.onclick = async () => {
-                try {
-                    await fetch(`http://localhost:3000/update/${data.id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ message: input.value })
-                    })
+            const saveButton = document.createElement('button')
+            saveButton.innerText = 'Save'
+            saveButton.className = 'bg-green-500 py-1 px-2 my-2 text-white rounded-2xl ml-3 hidden'
+            saveButton.onclick = () => {
 
-                    p.innerText = input.value
+                editData(data.id, input)
 
-                    input.classList.add('hidden')
-                    cancelBtn.classList.add('hidden')
-                    saveBtn.classList.add('hidden')
-                    p.classList.remove('hidden')
-                    editBtn.classList.remove('hidden')
+                text.innerText = input.value
 
-                } catch (err) {
-                    console.error('cannot update data front: ', err)
-                }
+                input.classList.add('hidden')
+                cancelButton.classList.add('hidden')
+                saveButton.classList.add('hidden')
+                text.classList.remove('hidden')
+                editButton.classList.remove('hidden')
             }
 
             //by default cancel button and input are hidden
 
             //cancel button event
-            cancelBtn.onclick = () => {
-                // Restore original state
+            cancelButton.onclick = () => {
                 input.classList.add('hidden')
-                cancelBtn.classList.add('hidden')
-                saveBtn.classList.add('hidden')
-                p.classList.remove('hidden')
-                editBtn.classList.remove('hidden')
+                cancelButton.classList.add('hidden')
+                saveButton.classList.add('hidden')
+                text.classList.remove('hidden')
+                editButton.classList.remove('hidden')
 
-                input.value = data.message
+                input.value = text.innerText
             }
 
             //create edit button element
-            const editBtn = document.createElement('button')
-            editBtn.innerText = 'Edit'
-            editBtn.className = 'bg-blue-500 py-1 px-2 my-2 text-white rounded-2xl ml-3'
+            const editButton = document.createElement('button')
+            editButton.innerText = 'Edit'
+            editButton.className = 'bg-blue-500 py-1 px-2 my-2 text-white rounded-2xl ml-3'
 
             //edit button event
-            editBtn.onclick = () => {
-                // Close other open edits
-                const activeInput = document.querySelector('input.editing:not(.hidden)')
-                if (activeInput) {
-                    activeInput.classList.add('hidden')
-                    activeInput.parentElement.querySelector('p').classList.remove('hidden')
-                    // activeInput.parentElement.querySelector('button:contains("Cancel")')?.classList.add('hidden')
-                    // activeInput.parentElement.querySelector('button:contains("Edit")')?.classList.remove('hidden')
-                }
-
+            editButton.onclick = () => {
                 // Switch to input mode
                 input.classList.remove('hidden')
-                cancelBtn.classList.remove('hidden')
-                saveBtn.classList.remove('hidden')
-                p.classList.add('hidden')
-                editBtn.classList.add('hidden')
+                cancelButton.classList.remove('hidden')
+                saveButton.classList.remove('hidden')
+                text.classList.add('hidden')
+                editButton.classList.add('hidden')
             }
 
             // Append everything
-            li.appendChild(p)
+            li.appendChild(text)
             li.appendChild(input)
-            li.appendChild(editBtn)
-            li.appendChild(saveBtn)
-            li.appendChild(cancelBtn)
-            li.appendChild(delBtn)
+            li.appendChild(editButton)
+            li.appendChild(saveButton)
+            li.appendChild(cancelButton)
+            li.appendChild(deleteButton)
             ul.appendChild(li)
 
         });
+        
     } catch (err) {
         console.error('failed to fetch: ' + err)
     }

@@ -9,17 +9,17 @@
 </head>
 
 <body class="w-screen h-screen flex flex-col items-center bg-amber-100 px-3">
-    <div class="bg-white md:w-1/2 max-md:px-7 px-3 w-full h-36 flex flex-col justify-center items-center mt-15 rounded-2xl shadow-2xl">
+    <div class="bg-white md:w-1/2 max-md:px-7 px-3 py-3 w-full h-36 flex flex-col justify-center items-center mt-15 rounded-2xl shadow-2xl">
         <h1 class="mb-10 text-3xl"><b>Dean POST</b></h1>
         <form action="/post" method="post" id="form" class="w-full flex justify-center gap-5">
             <input type="text" name="message" id="inputMessage" placeholder="Input message here"
-                class="w-4/5 h-10 rounded-3xl pl-4 bg-gray-300">
+                class="w-4/5 h-10 rounded-3xl pl-4 bg-gray-300" required>
             <button class="bg-blue-500 px-4 py-1 text-white rounded-3xl" type="submit">submit</button>
         </form>
     </div>
     <div class="bg-white md:w-1/2 w-full mt-10 px-7 py-3 rounded-2xl shadow-2xl">
         <div class="w-full flex justify-between">
-            <ul id="data"></ul>
+            <ul class="w-full flex flex-col justify-between" id="data"></ul>
         </div>
     </div>
 

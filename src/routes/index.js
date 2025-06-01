@@ -8,9 +8,7 @@ router.get('/', (req, res) => {
     res.sendFile(path);
 })
 
-router.get('/api', blockBrowser)
-
-router.get('/api', async (req, res) => {
+router.get('/api', blockBrowser, async (req, res) => {
     try {
         const data = await Message.findAll()
         res.send(data)
