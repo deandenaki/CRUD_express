@@ -8,77 +8,22 @@
     <link rel="stylesheet" href="/css/output.css" type="text/css">
 </head>
 
-<body class="w-screen h-screen flex flex-col items-center">
-    <div class="bg-white w-1/2 h-36 flex flex-col justify-center items-center mt-15 rounded-2xl shadow-2xl">
+<body class="w-screen h-screen flex flex-col items-center bg-amber-100 px-3">
+    <div class="bg-white md:w-1/2 max-md:px-7 px-3 w-full h-36 flex flex-col justify-center items-center mt-15 rounded-2xl shadow-2xl">
         <h1 class="mb-10 text-3xl"><b>Dean POST</b></h1>
         <form action="/post" method="post" id="form" class="w-full flex justify-center gap-5">
             <input type="text" name="message" id="inputMessage" placeholder="Input message here"
-                class="w-4/5 h-8 rounded-3xl pl-2 bg-gray-300">
+                class="w-4/5 h-10 rounded-3xl pl-4 bg-gray-300">
             <button class="bg-blue-500 px-4 py-1 text-white rounded-3xl" type="submit">submit</button>
         </form>
     </div>
-    <div class="bg-white w-1/2 mt-10 p-3 rounded-3xl shadow-2xl">
+    <div class="bg-white md:w-1/2 w-full mt-10 px-7 py-3 rounded-2xl shadow-2xl">
         <div class="w-full flex justify-between">
             <ul id="data"></ul>
         </div>
     </div>
 
-    <script>
-        const form = document.getElementById('form')
-        const inputMessage = document.getElementById('inputMessage')
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault()
-
-            if (!inputMessage.value.trim()) {
-                window.alert('message is empty')
-                return
-            }
-
-            form.submit()
-        })
-
-        async function getData() {
-            try {
-                const data = await fetch('http://localhost:3000/api', { method: 'GET' })
-                const json = await data.json()
-
-                const ul = document.getElementById('data')
-                ul.className = 'w-full flex flex-col justfiy-between'
-                json.forEach(data => {
-                    const li = document.createElement('li')
-                    li.className = 'w-full flex justify-between'
-                    const p = document.createElement('p')
-                    p.innerText = data.message
-                    p.className = 'w-full flex items-center'
-
-                    const delBtn = document.createElement('button')
-                    delBtn.innerText = 'Delete'
-                    delBtn.className = 'bg-red-500 py-1 px-2 my-2 text-white rounded ml-3'
-                    delBtn.onclick = async () => {
-                        try {
-                            await fetch(`http://localhost:3000/delete/${data.id}`, {
-                                method: 'DELETE'
-                            })
-                            li.remove()
-                            delBtn.remove()
-                        } catch(err) {
-                            console.error('cannot delete: ', err)
-                        }
-                    }
-
-                    ul.appendChild(li)
-                    li.appendChild(p)
-                    li.appendChild(delBtn)
-                });
-            } catch (err) {
-                console.error('failed to fetch: ' + err)
-            }
-        }
-
-        getData()
-
-    </script>
+    <script type="module" src="/js/data.js"></script>
 </body>
 
 </html>
